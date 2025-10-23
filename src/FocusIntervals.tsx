@@ -11,7 +11,7 @@ const ringtoneUrl = new URL("../ringtone-022-376904.mp3", import.meta.url).href;
 
 // 8 интервалов по 45 минут (в миллисекундах)
 const INTERVAL_COUNT = 8;
-const INTERVAL_MS = 45 * 60 * 1000; // 2700000
+const INTERVAL_MS = 1 * 60 * 1000; // 2700000
 
 // Статусы интервалов
 type IntervalStatus = "pending" | "running" | "paused" | "done";
@@ -90,6 +90,53 @@ export default function FocusIntervals() {
     setHydrated(true);
     // Немедленно зафиксируем восстановленное состояние, чтобы обновить savedAt
     saveNow(restored as any);
+  }, []);
+
+  // При возвращении во вкладку наверстываем прогресс, прошедший в фоне
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.hidden) return;
+      const saved = loadState(INTERVAL_COUNT);
+      if (!saved) return;
+
+      const now = Date.now();
+      const restored = saved.items.map((it) => ({ status: it.status as IntervalStatus, elapsedMs: it.elapsedMs as number }));
+      let idx = saved.runningIndex;
+      if (idx < 0) {
+        const found = restored.findIndex((it) => it.status === 'running');
+        idx = found;
+      }
+
+      let delta = Math.max(0, now - saved.savedAt);
+      while (idx >= 0 && delta > 0) {
+        const cur = restored[idx];
+        if (!cur || cur.status !== 'running') break;
+        const remaining = INTERVAL_MS - cur.elapsedMs;
+        if (delta >= remaining) {
+          restored[idx] = { status: 'done', elapsedMs: INTERVAL_MS };
+          delta -= remaining;
+          const nextIdx = idx + 1;
+          if (nextIdx < restored.length) {
+            restored[nextIdx] = { ...restored[nextIdx], status: 'running' };
+            idx = nextIdx;
+          } else {
+            idx = -1;
+            break;
+          }
+        } else {
+          restored[idx] = { ...cur, elapsedMs: cur.elapsedMs + delta };
+          delta = 0;
+        }
+      }
+
+      setItems(restored);
+      startTsRef.current = idx >= 0 ? now : null;
+      // Зафиксируем состояние сразу после «догонки», чтобы обновить savedAt
+      saveNow(restored as any);
+    };
+
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
   }, []);
 
 
