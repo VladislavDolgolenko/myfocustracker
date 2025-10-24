@@ -11,7 +11,7 @@ const ringtoneUrl = new URL("../ringtone-022-376904.mp3", import.meta.url).href;
 
 // 8 интервалов по 45 минут (в миллисекундах)
 const INTERVAL_COUNT = 8;
-const INTERVAL_MS = 1 * 60 * 1000; // 2700000
+const INTERVAL_MS = 45 * 60 * 1000; // 2700000
 
 // Статусы интервалов
 type IntervalStatus = "pending" | "running" | "paused" | "done";
