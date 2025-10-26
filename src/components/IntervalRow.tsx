@@ -71,10 +71,12 @@ export default function IntervalRow({
         <div className="h-full bg-gradient-to-r from-cyan-400 to-blue-500" style={{ width: `${progress}%`, transition: 'width 0.2s linear' }} />
       </div>
 
-      <div className="text-sm text-white/80 flex items-center justify-between">
-        <span>Прогресс: {progress}%</span>
-        <span>Осталось: {remainingLabel}</span>
-      </div>
+      {status !== 'done' && (
+        <div className="text-sm text-white/80 flex items-center justify-between">
+          <span>Прогресс: {progress}%</span>
+          <span>Осталось: {remainingLabel}</span>
+        </div>
+      )}
     </li>
   )
 }

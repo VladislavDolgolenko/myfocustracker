@@ -11,7 +11,7 @@ export default function Header({ onReset }: HeaderProps) {
         onClick={onReset}
         className="px-4 py-2 rounded-xl text-sm font-medium bg-white/20 hover:bg-white/30 text-white border border-white/30 shadow-sm transition-colors"
       >
-        Сбросить
+        Reset All
       </button>
     </header>
   )
