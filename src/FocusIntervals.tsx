@@ -257,6 +257,7 @@ export default function FocusIntervals() {
 
   return (
     <div className="min-h-screen p-6 md:p-10">
+      <div className="max-w-3xl mx-auto mb-2 text-center text-xs text-xl text-white/70">My Focus Tracker .com</div>
       <div className="max-w-3xl mx-auto backdrop-blur-md bg-white/10 rounded-3xl shadow-xl p-3 md:p-8 md:border md:border-white/20">
         <Header onReset={resetAll} />
 
